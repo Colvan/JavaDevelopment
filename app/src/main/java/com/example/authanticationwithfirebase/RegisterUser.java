@@ -22,7 +22,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
@@ -31,6 +35,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
     private EditText editTextFullName, editTextEmail,editTextPassword;
     private FirebaseAuth mAuth;
     private ProgressBar progressBar;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +53,8 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         editTextFullName =  findViewById(R.id.fullname);
         editTextEmail=  findViewById(R.id.email);
         editTextPassword=  findViewById(R.id.password);
-
         progressBar = findViewById(R.id.progressBar);
+        mDatabase = FirebaseDatabase.getInstance("https://project1-d4f2c-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
 
     }
 
@@ -101,7 +106,6 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         }
 
         progressBar.setVisibility(View.VISIBLE);
-
         User user = new User(fullname,email);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -110,25 +114,24 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                            progressBar.setVisibility(View.GONE);
+                            FirebaseUser user1 = mAuth.getCurrentUser();
+                            updateUI(user1,user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                             Toast.makeText(RegisterUser.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
-                            progressBar.setVisibility(View.GONE);
+                            updateUI(null,null);
 
                         }
                     }
 
 
-                    public void updateUI(FirebaseUser user){
+                    public void updateUI(FirebaseUser user1,User user){
 
-                        if(user != null){
-                            Toast.makeText(RegisterUser.this,"You Have Registered successfully",Toast.LENGTH_LONG).show();
+                        if(user1 != null){
+                            Toast.makeText(RegisterUser.this,"You Have Registered Successfully",Toast.LENGTH_LONG).show();
+                            mDatabase.child("Users").child(user1.getUid()).setValue(user);
                             startActivity(new Intent(RegisterUser.this,MainActivity.class));
                             progressBar.setVisibility(View.GONE);
 
