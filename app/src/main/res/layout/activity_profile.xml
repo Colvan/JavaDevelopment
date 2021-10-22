@@ -12,5 +12,9 @@
         android:layout_height="wrap_content"
         android:text="Welcome"
         tools:layout_editor_absoluteX="48dp"
-        tools:layout_editor_absoluteY="56dp" />
+        tools:layout_editor_absoluteY="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="wrap_content"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
